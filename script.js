@@ -10,22 +10,31 @@ let players = [];
 addPlayerForm.addEventListener('submit', function(event) {
   event.preventDefault();
   
-  const playerName = playerNameInput.value;
+  const playerName = playerNameInput.value.trim();
   const playerWins = parseInt(playerWinsInput.value);
   const playerDraws = parseInt(playerDrawsInput.value);
   const playerLosses = parseInt(playerLossesInput.value);
   
   const playerPoints = (playerWins * 2) + playerDraws;
 
-  const player = {
-    name: playerName,
-    wins: playerWins,
-    draws: playerDraws,
-    losses: playerLosses,
-    points: playerPoints
-  };
-
-  players.push(player);
+  const existingPlayerIndex = players.findIndex(player => player.name === playerName);
+  if (existingPlayerIndex !== -1) {
+    // If player exists, update the existing entry
+    players[existingPlayerIndex].wins = playerWins;
+    players[existingPlayerIndex].draws = playerDraws;
+    players[existingPlayerIndex].losses = playerLosses;
+    players[existingPlayerIndex].points = playerPoints;
+  } else {
+    // If player doesn't exist, add a new entry
+    const player = {
+      name: playerName,
+      wins: playerWins,
+      draws: playerDraws,
+      losses: playerLosses,
+      points: playerPoints
+    };
+    players.push(player);
+  }
 
   renderLeaderboard();
   
