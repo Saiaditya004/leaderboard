@@ -15,6 +15,7 @@ addPlayerForm.addEventListener('submit', function(event) {
   const playerDraws = parseInt(playerDrawsInput.value);
   const playerLosses = parseInt(playerLossesInput.value);
   
+  const playerMatches = playerWins + playerDraws + playerLosses;
   const playerPoints = (playerWins * 2) + playerDraws;
 
   const existingPlayerIndex = players.findIndex(player => player.name === playerName);
@@ -23,6 +24,7 @@ addPlayerForm.addEventListener('submit', function(event) {
     players[existingPlayerIndex].wins = playerWins;
     players[existingPlayerIndex].draws = playerDraws;
     players[existingPlayerIndex].losses = playerLosses;
+    players[existingPlayerIndex].matches = playerMatches;
     players[existingPlayerIndex].points = playerPoints;
   } else {
     // If player doesn't exist, add a new entry
@@ -31,15 +33,29 @@ addPlayerForm.addEventListener('submit', function(event) {
       wins: playerWins,
       draws: playerDraws,
       losses: playerLosses,
+      matches: playerMatches,
       points: playerPoints
     };
     players.push(player);
   }
 
+  sortLeaderboard();
   renderLeaderboard();
   
   addPlayerForm.reset();
 });
+
+function sortLeaderboard() {
+  players.sort((a, b) => {
+    if (a.points !== b.points) {
+      return b.points - a.points; // Sort by points (descending)
+    }
+    if (a.wins !== b.wins) {
+      return b.wins - a.wins; // If points are equal, sort by wins (descending)
+    }
+    return b.matches - a.matches; // If both points and wins are equal, sort by matches played (descending)
+  });
+}
 
 function renderLeaderboard() {
   leaderboard.innerHTML = `
@@ -50,6 +66,7 @@ function renderLeaderboard() {
           <th>Wins</th>
           <th>Draws</th>
           <th>Losses</th>
+          <th>Matches Played</th>
           <th>Points</th>
           <th>Action</th>
         </tr>
@@ -61,6 +78,7 @@ function renderLeaderboard() {
             <td>${player.wins}</td>
             <td>${player.draws}</td>
             <td>${player.losses}</td>
+            <td>${player.matches}</td>
             <td>${player.points}</td>
             <td><button onclick="deletePlayer(${index})">Delete</button></td>
           </tr>
